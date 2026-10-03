@@ -1,0 +1,72 @@
+from kivy.app import App
+from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.button import Button
+from kivy.uix.label import Label
+
+class CalculatorApp(App):
+    def build(self):
+        self.display = Label(text='0', font_size='48sp', halign='right', valign='middle')
+        self.display.bind(size=self.display.setter('text_size'))
+        
+        self.operation = Label(text='', font_size='24sp', halign='right', valign='top')
+        self.operation.bind(size=self.operation.setter('text_size'))
+
+        main_layout = BoxLayout(orientation='vertical')
+        main_layout.add_widget(self.operation)
+        main_layout.add_widget(self.display)
+        
+        buttons_layout = BoxLayout(orientation='vertical', size_hint=(1, 0.8))
+        
+        buttons = [
+            ['C', 'DEL', '%', '/'],
+            ['7', '8', '9', '*'],
+            ['4', '5', '6', '-'],
+            ['1', '2', '3', '+'],
+            ['0', '.', '=']
+        ]
+        
+        for row in buttons:
+            row_layout = BoxLayout()
+            for label in row:
+                if label == '=':
+                    btn = Button(text=label, font_size='24sp', background_color=(0.2, 0.6, 0.2, 1))
+                else:
+                    btn = Button(text=label, font_size='24sp')
+                btn.bind(on_press=self.on_button_press)
+                row_layout.add_widget(btn)
+            buttons_layout.add_widget(row_layout)
+        
+        main_layout.add_widget(buttons_layout)
+        return main_layout
+
+    def on_button_press(self, instance):
+        text = instance.text
+        current_text = self.display.text
+        
+        if text == 'C':
+            self.display.text = '0'
+            self.operation.text = ''
+        elif text == 'DEL':
+            if len(current_text) > 1:
+                self.display.text = current_text[:-1]
+            else:
+                self.display.text = '0'
+        elif text == '=':
+            try:
+                result = str(eval(self.operation.text + self.display.text))
+                self.display.text = result
+                self.operation.text = ''
+            except Exception:
+                self.display.text = 'Error'
+                self.operation.text = ''
+        elif text in ['+', '-', '*', '/', '%']:
+            self.operation.text = current_text + ' ' + text + ' '
+            self.display.text = '0'
+        else:
+            if current_text == '0' and text != '.':
+                self.display.text = text
+            else:
+                self.display.text = current_text + text
+
+if __name__ == '__main__':
+    CalculatorApp().run()
