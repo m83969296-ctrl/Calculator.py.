@@ -2,31 +2,17 @@ name: Build APK
 on: [push]
 jobs:
   build-android:
-    name: Build for Android
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
+    container:
+      image: kivy/buildozer:latest
+      options: --user root
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup Java
-        uses: actions/setup-java@v4
-        with:
-          distribution: 'temurin'
-          java-version: '17'
-
-      - name: Setup Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.10'
-
-      - name: Install system dependencies
+      - name: Accept Android licenses
         run: |
-          sudo apt update
-          sudo apt install -y git zip unzip autoconf libtool pkg-config zlib1g-dev libncurses5-dev libncursesw5-dev libtinfo5 cmake libffi-dev libssl-dev
-
-      - name: Install Buildozer
-        run: |
-          pip install --upgrade buildozer cython virtualenv
+          yes | sdkmanager --licenses || true
 
       - name: Build APK
         run: |
