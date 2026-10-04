@@ -4,7 +4,7 @@ jobs:
   build-android:
     runs-on: ubuntu-latest
     container:
-      image: kivy/buildozer:latest
+      image: kivy/buildozer:1.5.0
       options: --user root
     steps:
       - name: Checkout code
